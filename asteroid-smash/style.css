@@ -36,6 +36,14 @@ body {
 .asteroid:hover {
     transform: scale(1.1);
 }
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+.asteroid.exploded {
+    animation: explode 0.3s ease-out;
+}
 
 h1 {
     margin-bottom: 10px;

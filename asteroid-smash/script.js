@@ -18,7 +18,8 @@ function createAsteroid() {
         score += 1;
         scoreDisplay.textContent = score;
 	console.log("Smashed!"); 
-        asteroid.remove();
+        asteroid.classList.add('exploded');
+    	setTimeout(() => asteroid.remove(), 300); // Remove after animation
     });
 
     // Remove after 3 seconds if not smashed
