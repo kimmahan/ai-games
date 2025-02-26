@@ -1,6 +1,7 @@
 const gameArea = document.getElementById('game-area');
 const scoreDisplay = document.getElementById('score');
 let score = 0;
+let spawnSpeed = 1000; // Start at 1 second
 
 function createAsteroid() {
     const asteroid = document.createElement('div');
@@ -30,6 +31,20 @@ function createAsteroid() {
 
 // Spawn asteroids every second
 setInterval(createAsteroid, 1000);
+
+let timeLeft = 30;
+const timerDisplay = document.createElement('p');
+timerDisplay.textContent = `Time: ${timeLeft}s`;
+document.querySelector('.game-container').appendChild(timerDisplay);
+
+setInterval(() => {
+    timeLeft--;
+    timerDisplay.textContent = `Time: ${timeLeft}s`;
+    if (timeLeft <= 0) {
+        clearInterval(spawnInterval); // Stop spawning asteroids
+        alert(`Game Over! Final Score: ${score}`);
+    }
+}, 1000);
 
 // Start the game
 createAsteroid();
