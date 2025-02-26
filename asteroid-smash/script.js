@@ -16,6 +16,7 @@ function createAsteroid() {
     asteroid.addEventListener('click', () => {
         score += 1;
         scoreDisplay.textContent = score;
+	console.log("Smashed!"); 
         asteroid.remove();
     });
 
