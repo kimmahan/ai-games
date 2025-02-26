@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whack-a-Mole!</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #2c3e50;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .game-container {
+            text-align: center;
+        }
+
+        #game-area {
+            width: 600px;
+            height: 400px;
+            background-color: #34495e;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 10px;
+            border: 2px solid #fff;
+            border-radius: 10px;
+        }
+
+        .hole {
+            background-color: #7f8c8d;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mole {
+            width: 80%;
+            height: 80%;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.2s;
+        }
+
+        .mole:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .mole.exploded {
+            animation: explode 0.3s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        #high-scores {
+            margin-top: 20px;
+            font-size: 1em;
+        }
+
+        #name-input {
+            margin-top: 10px;
+            padding: 5px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Whack-a-Mole!</h1>
+        <p>Score: <span id="score">0</span> | Time: <span id="timer">30</span>s</p>
+        <div id="game-area"></div>
+        <input type="text" id="name-input" placeholder="Enter your name for high score" style="display: none;">
+        <button id="submit-score" style="display: none;">Submit Score</button>
+        <div id="high-scores"></div>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById('game-area');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const nameInput = document.getElementById('name-input');
+        const submitScoreBtn = document.getElementById('submit-score');
+        const highScoresDiv = document.getElementById('high-scores');
+        let score = 0;
+        let timeLeft = 30;
+        let gameActive = true;
+
+        // Load high scores from localStorage
+        let highScores = JSON.parse(localStorage.getItem('whackAMoleHighScores') || '[]');
+
+        // Create 12 holes (4x3 grid)
+        for (let i = 0; i < 12; i++) {
+            const hole = document.createElement('div');
+            hole.classList.add('hole');
+            gameArea.appendChild(hole);
+        }
+
+        function showMole() {
+            if (!gameActive) return;
+            const holes = document.querySelectorAll('.hole');
+            const randomHole = holes[Math.floor(Math.random() * holes.length)];
+
+            // Remove any existing mole in this hole
+            const currentMole = randomHole.querySelector('.mole');
+            if (currentMole) currentMole.remove();
+
+            const mole = document.createElement('div');
+            mole.classList.add('mole');
+            randomHole.appendChild(mole);
+
+            // Click to whack with explosion
+            mole.addEventListener('click', () => {
+                if (!gameActive) return;
+                score += 1;
+                scoreDisplay.textContent = score;
+                console.log("Whacked!");
+                mole.classList.add('exploded');
+                setTimeout(() => mole.remove(), 300); // Remove after explosion
+            });
+
+            // Mole disappears after 1 second if not whacked
+            setTimeout(() => {
+                if (mole.parentElement && gameActive) mole.remove();
+            }, 1000);
+        }
+
+        // Spawn moles every 800ms
+        const spawnInterval = setInterval(showMole, 800);
+
+        // Timer
+        const timer = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+            } else {
+                clearInterval(timer);
+                clearInterval(spawnInterval);
+                gameActive = false;
+                showHighScoreInput();
+            }
+        }, 1000);
+
+        // Show high score input when game ends
+        function showHighScoreInput() {
+            nameInput.style.display = 'block';
+            submitScoreBtn.style.display = 'block';
+            nameInput.focus();
+        }
+
+        // Submit high score
+        submitScoreBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim() || 'Anonymous';
+            highScores.push({ name, score });
+            highScores.sort((a, b) => b.score - a.score); // Sort descending
+            highScores = highScores.slice(0, 5); // Keep top 5
+            localStorage.setItem('whackAMoleHighScores', JSON.stringify(highScores));
+            updateHighScores();
+            nameInput.style.display = 'none';
+            submitScoreBtn.style.display = 'none';
+            nameInput.value = '';
+        });
+
+        // Update and display high scores
+        function updateHighScores() {
+            highScoresDiv.innerHTML = '<h3>High Scores</h3>';
+            highScores.forEach((entry, index) => {
+                highScoresDiv.innerHTML += `${index + 1}. ${entry.name}: ${entry.score}<br>`;
+            });
+        }
+
+        // Initial display of high scores
+        updateHighScores();
+
+        // Start the game
+        showMole();
+    </script>
+</body>
+</html>
