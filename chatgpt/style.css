@@ -1,0 +1,39 @@
+body {
+    background-color: black;
+    color: limegreen;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#terminal {
+    width: 80%;
+    max-width: 600px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid limegreen;
+    padding: 20px;
+    box-shadow: 0 0 10px limegreen;
+    overflow: auto;
+    height: 50vh;
+}
+
+#output {
+    text-align: left;
+    max-height: 80%;
+    overflow-y: auto;
+}
+
+#command-input {
+    width: 100%;
+    background: black;
+    color: limegreen;
+    border: none;
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    padding: 5px;
+    outline: none;
+}
