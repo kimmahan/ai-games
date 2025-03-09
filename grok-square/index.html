@@ -13,6 +13,7 @@
         <p>High Score: <span id="high-score">0</span></p>
         <p>Time Left: <span id="timer">30</span>s</p>
         <div id="target"></div>
+        <div id="miss-message" class="hidden"></div>
         <div id="game-over" class="hidden">
             <h2>Game Over!</h2>
             <p>Your Score: <span id="final-score"></span></p>
@@ -29,10 +30,20 @@
         const finalScoreDisplay = document.getElementById('final-score');
         const finalHighScoreDisplay = document.getElementById('final-high-score');
         const restartButton = document.getElementById('restart');
+        const missMessage = document.getElementById('miss-message');
         let score = 0;
         let highScore = localStorage.getItem('highScore') || 0;
         let timeLeft = 30;
         let gameActive = true;
+
+        // Funny miss messages
+        const missQuotes = [
+            "Oof, my grandma could’ve hit that!",
+            "Swing and a miss, champ!",
+            "Are you even trying?",
+            "The square’s laughing at you now!",
+            "Epic fail detected!"
+        ];
 
         // Display initial high score
         highScoreDisplay.textContent = highScore;
@@ -48,7 +59,7 @@
             target.style.top = `${newY}px`;
         }
 
-        // Update score and high score
+        // Update score and trigger hit effect
         function updateScore() {
             score++;
             scoreDisplay.textContent = score;
@@ -57,7 +68,24 @@
                 highScoreDisplay.textContent = highScore;
                 localStorage.setItem('highScore', highScore);
             }
+            target.classList.add('hit');
+            setTimeout(() => target.classList.remove('hit'), 200); // Remove effect after animation
             moveSquare();
+        }
+
+        // Handle miss (deduct point and show funny message)
+        function handleMiss() {
+            if (!gameActive) return;
+            score = Math.max(0, score - 1); // Prevent negative score
+            scoreDisplay.textContent = score;
+            const randomQuote = missQuotes[Math.floor(Math.random() * missQuotes.length)];
+            missMessage.textContent = randomQuote;
+            missMessage.classList.remove('hidden');
+            missMessage.classList.add('shake');
+            setTimeout(() => {
+                missMessage.classList.add('hidden');
+                missMessage.classList.remove('shake');
+            }, 1000); // Hide message after 1 second
         }
 
         // Timer countdown
@@ -91,14 +119,17 @@
             timerDisplay.textContent = timeLeft;
             gameOverScreen.classList.add('hidden');
             target.classList.remove('hidden');
+            missMessage.classList.add('hidden');
             moveSquare();
             startTimer();
         }
 
         // Event listeners
-        target.addEventListener('click', () => {
+        target.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent miss event from firing
             if (gameActive) updateScore();
         });
+        document.body.addEventListener('click', handleMiss); // Miss when clicking outside square
         restartButton.addEventListener('click', restartGame);
 
         // Start game
