@@ -10,12 +10,18 @@
     <div id="game-container">
         <h1>Catch the Square!</h1>
         <p>Score: <span id="score">0</span></p>
+        <p>High Score: <span id="high-score">0</span></p>
         <div id="target"></div>
     </div>
     <script>
         const target = document.getElementById('target');
         const scoreDisplay = document.getElementById('score');
+        const highScoreDisplay = document.getElementById('high-score');
         let score = 0;
+        let highScore = localStorage.getItem('highScore') || 0; // Load high score from localStorage
+
+        // Display initial high score
+        highScoreDisplay.textContent = highScore;
 
         // Move square to random position
         function moveSquare() {
@@ -27,10 +33,18 @@
             target.style.top = `${newY}px`;
         }
 
-        // Increase score and move square on click
+        // Increase score, update high score if beaten, and move square on click
         target.addEventListener('click', () => {
             score++;
             scoreDisplay.textContent = score;
+
+            // Update high score if current score exceeds it
+            if (score > highScore) {
+                highScore = score;
+                highScoreDisplay.textContent = highScore;
+                localStorage.setItem('highScore', highScore); // Save to localStorage
+            }
+
             moveSquare();
         });
 
