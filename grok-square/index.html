@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the Square</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <h1>Catch the Square!</h1>
+        <p>Score: <span id="score">0</span></p>
+        <div id="target"></div>
+    </div>
+    <script>
+        const target = document.getElementById('target');
+        const scoreDisplay = document.getElementById('score');
+        let score = 0;
+
+        // Move square to random position
+        function moveSquare() {
+            const maxX = window.innerWidth - 50;
+            const maxY = window.innerHeight - 50;
+            const newX = Math.floor(Math.random() * maxX);
+            const newY = Math.floor(Math.random() * maxY);
+            target.style.left = `${newX}px`;
+            target.style.top = `${newY}px`;
+        }
+
+        // Increase score and move square on click
+        target.addEventListener('click', () => {
+            score++;
+            scoreDisplay.textContent = score;
+            moveSquare();
+        });
+
+        // Start game
+        moveSquare();
+    </script>
+</body>
+</html>
