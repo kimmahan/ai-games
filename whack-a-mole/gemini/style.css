@@ -1,0 +1,72 @@
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.container {
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.score-time {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 10px;
+    margin-bottom: 20px;
+}
+
+.hole {
+    width: 100px;
+    height: 100px;
+    background-color: #bfa180;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+}
+
+.mole {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    bottom: -80px;
+    left: 10px;
+    background-image: url('assets/mole.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: bottom 0.2s ease-out;
+}
+
+.mole.up {
+    bottom: 10px;
+}
+
+.mole.whacked {
+    background-image: url('assets/mole-whacked.png');
+}
+
+#start-button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.high-scores {
+    margin-top: 20px;
+}
