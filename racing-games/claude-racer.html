@@ -85,6 +85,40 @@
             z-index: 20;
             display: none;
         }
+        .high-scores {
+            margin-top: 20px;
+            width: 80%;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .high-scores h3 {
+            text-align: center;
+            margin-top: 0;
+        }
+        .high-scores table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+        }
+        .high-scores th, .high-scores td {
+            padding: 5px;
+            text-align: center;
+            border-bottom: 1px solid #444;
+        }
+        .name-input {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .name-input input {
+            padding: 5px;
+            border-radius: 3px;
+            border: none;
+        }
         button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -108,6 +142,24 @@
         <div class="game-over" id="gameOver">
             <div>Game Over!</div>
             <div id="finalScore">Score: 0</div>
+            <div class="name-input" id="nameInputContainer">
+                <input type="text" id="playerName" placeholder="Enter your name" maxlength="15">
+                <button id="saveScoreButton">Save Score</button>
+            </div>
+            <div class="high-scores" id="highScores">
+                <h3>High Scores</h3>
+                <table id="scoreTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoreTableBody"></tbody>
+                </table>
+            </div>
             <button id="restartButton">Restart</button>
         </div>
     </div>
@@ -121,6 +173,9 @@
         let gameOverScreen = document.getElementById('gameOver');
         let finalScoreDisplay = document.getElementById('finalScore');
         let restartButton = document.getElementById('restartButton');
+        let playerNameInput = document.getElementById('playerName');
+        let saveScoreButton = document.getElementById('saveScoreButton');
+        let scoreTableBody = document.getElementById('scoreTableBody');
         
         let carPosition = 200;
         let carSpeed = 0;
@@ -139,6 +194,9 @@
         let obstacles = [];
         let obstacleSpeed = 5;
         let obstacleFrequency = 100; // Lower is more frequent
+        
+        // High scores
+        let highScores = [];
         
         // Controls
         let keys = {
@@ -255,11 +313,87 @@
             requestAnimationFrame(gameLoop);
         }
         
+        // Load high scores from localStorage
+        function loadHighScores() {
+            const savedScores = localStorage.getItem('carGameHighScores');
+            if (savedScores) {
+                highScores = JSON.parse(savedScores);
+            }
+            updateHighScoresTable();
+        }
+        
+        // Save high scores to localStorage
+        function saveHighScores() {
+            localStorage.setItem('carGameHighScores', JSON.stringify(highScores));
+        }
+        
+        // Update high scores table
+        function updateHighScoresTable() {
+            // Clear table
+            scoreTableBody.innerHTML = '';
+            
+            // Sort high scores by score (descending)
+            highScores.sort((a, b) => b.score - a.score);
+            
+            // Keep only top 10 scores
+            if (highScores.length > 10) {
+                highScores = highScores.slice(0, 10);
+            }
+            
+            // Add scores to table
+            highScores.forEach((scoreData, index) => {
+                const row = document.createElement('tr');
+                
+                const rankCell = document.createElement('td');
+                rankCell.textContent = index + 1;
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = scoreData.name;
+                
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = scoreData.score;
+                
+                const dateCell = document.createElement('td');
+                dateCell.textContent = new Date(scoreData.date).toLocaleDateString();
+                
+                row.appendChild(rankCell);
+                row.appendChild(nameCell);
+                row.appendChild(scoreCell);
+                row.appendChild(dateCell);
+                
+                scoreTableBody.appendChild(row);
+            });
+        }
+        
+        // Save current score
+        function saveCurrentScore() {
+            const playerName = playerNameInput.value.trim() || 'Anonymous';
+            
+            highScores.push({
+                name: playerName,
+                score: score,
+                date: new Date().toISOString()
+            });
+            
+            saveHighScores();
+            updateHighScoresTable();
+            
+            // Hide the input and save button after saving
+            document.getElementById('nameInputContainer').style.display = 'none';
+        }
+
         // Game over
         function gameOver() {
             gameRunning = false;
             finalScoreDisplay.textContent = 'Score: ' + score;
             gameOverScreen.style.display = 'flex';
+            
+            // Reset name input
+            playerNameInput.value = '';
+            document.getElementById('nameInputContainer').style.display = 'flex';
+            
+            // Update high scores table
+            updateHighScoresTable();
         }
         
         // Restart game
@@ -297,8 +431,10 @@
         });
         
         restartButton.addEventListener('click', restartGame);
+        saveScoreButton.addEventListener('click', saveCurrentScore);
         
         // Initialize game
+        loadHighScores();
         createLaneMarkers();
         gameLoop();
     </script>
