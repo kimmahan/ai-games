@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>St. Patrick's Day Matrix Rain</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 2rem;
+            color: gold;
+            text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00;
+            font-weight: bold;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .pot {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 2rem;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .character {
+            display: inline-block;
+            animation: glow 2s ease-in-out infinite alternate, rainbow 8s linear infinite;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #00ff00, 0 0 20px #00ff00;
+            }
+            to {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #00ff00, 0 0 40px #00ff00;
+            }
+        }
+        
+        @keyframes rainbow {
+            0% { color: #FF0000; }
+            14% { color: #FF7F00; }
+            28% { color: #FFFF00; }
+            42% { color: #00FF00; }
+            57% { color: #0000FF; }
+            71% { color: #4B0082; }
+            85% { color: #9400D3; }
+            100% { color: #FF0000; }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="title">Happy St. Patrick's Day!</div>
+    <div class="pot" id="pot">🍀 🥇 🍺</div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // Initialize canvas
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Make canvas full screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Set up the animation
+        const stPatricksChars = [
+            '☘', '🍀', '💚', '🇮🇪', '🍺', '🪙', '🌈',
+            'L', 'U', 'C', 'K', 'Y', 'I', 'R', 'I', 'S', 'H',
+            '0', '1', '7', '☘', '🍀'
+        ];
+        
+        // Initialize drops
+        const fontSize = 20;
+        const columns = Math.floor(canvas.width / fontSize);
+        
+        // Array of drops - one per column
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            // Start each drop at a random position above the canvas
+            drops[i] = Math.random() * -100;
+        }
+        
+        // Draw function
+        function draw() {
+            // Background with transparency to create trail effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Set text properties
+            ctx.font = fontSize + 'px monospace';
+            
+            // For each column
+            for (let i = 0; i < drops.length; i++) {
+                // Pick a random character
+                const text = stPatricksChars[Math.floor(Math.random() * stPatricksChars.length)];
+                
+                // Random green color with varying brightness
+                const green = Math.floor(Math.random() * 156) + 100; // Values between 100-255
+                
+                // Make some characters gold for variety
+                if (Math.random() < 0.1) {
+                    ctx.fillStyle = '#FFD700'; // Gold
+                } else {
+                    ctx.fillStyle = `rgb(0, ${green}, 0)`;
+                }
+                
+                // Draw the character
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                // Move drops down
+                drops[i] += 0.5;
+                
+                // Reset drop when it reaches bottom with random reset position
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = -1;
+                }
+            }
+        }
+        
+        // Click event - add new drops at click position
+        canvas.addEventListener('click', (e) => {
+            const clickX = Math.floor(e.clientX / fontSize);
+            const clickY = Math.floor(e.clientY / fontSize);
+            
+            // Create a burst of characters
+            for (let i = -5; i < 5; i++) {
+                const colIndex = clickX + i;
+                if (colIndex >= 0 && colIndex < drops.length) {
+                    drops[colIndex] = clickY;
+                }
+            }
+        });
+        
+        // Apply rainbow effect to title
+        const title = document.getElementById('title');
+        title.innerHTML = title.textContent.split('').map((char, index) => {
+            return `<span class="character" style="animation-delay: ${index * 0.1}s">${char}</span>`;
+        }).join('');
+        
+        // Animate pot of gold
+        const pot = document.getElementById('pot');
+        let position = 0;
+        let direction = 1;
+        
+        function animatePot() {
+            position += direction;
+            
+            if (position > 50) direction = -1;
+            if (position < -50) direction = 1;
+            
+            pot.style.transform = `translateX(${position}px)`;
+            requestAnimationFrame(animatePot);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // Recalculate columns
+            const newColumns = Math.floor(canvas.width / fontSize);
+            
+            // Adjust drops array for new width
+            while (drops.length < newColumns) {
+                drops.push(Math.random() * -100);
+            }
+            drops.length = newColumns; // Trim if window gets smaller
+        });
+        
+        // Start animations
+        setInterval(draw, 33); // ~30fps
+        animatePot();
+    </script>
+</body>
+</html>
