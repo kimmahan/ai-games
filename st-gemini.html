@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Happy St. Patrick's Day!</title>
+<style>
+body {
+  font-family: monospace;
+  text-align: center;
+  background-color: #f0f8ff; /* Light background */
+  color: #006400; /* Dark green text */
+  padding-top: 50px;
+}
+</style>
+</head>
+<body>
+
+<div id="shamrock-container"></div>
+<p>Happy St. Patrick's Day!</p>
+
+<script>
+  const shamrockContainer = document.getElementById('shamrock-container');
+  const shamrocks = [
+    `
+      _.--""--._
+     .'          '.
+    /   O      O   \\
+   |    \\  ^^  /    |
+   \\     '----'     /
+    '. _______ .'
+      //_____\\
+     (( ____ ))
+      '------'
+    `,
+    `
+       _.-""-._
+      /        \\
+     |  .--.  |
+     | /    \\ |
+     | \\    / |
+      \\  '--'  /
+       '------'
+    `,
+    `
+      .-""-.
+     /      \\
+    |  .--.  |
+    | /    \\ |
+    | \\    / |
+     \\  '--'  /
+      '------'
+    `
+  ];
+
+  let index = 0;
+  function animateShamrock() {
+    shamrockContainer.innerHTML = `<pre>${shamrocks[index]}</pre>`;
+    index = (index + 1) % shamrocks.length;
+    setTimeout(animateShamrock, 500); // Change every 0.5 seconds
+  }
+
+  animateShamrock();
+</script>
+
+</body>
+</html>
