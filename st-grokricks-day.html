@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>St. Patrick's Day Jig</title>
+    <style>
+        body {
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        pre {
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            text-align: center;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #00ff00; }
+            to { text-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00; }
+        }
+    </style>
+</head>
+<body>
+    <pre id="animation"></pre>
+
+    <script>
+        const frames = [
+            // Leprechaun Frame 1: Left leg up
+            `🍀 Happy St. Patrick's Day! 🍀
+      .-""""""""-.
+    .'          '.
+   /   Leprechaun   \\
+  : ,          , :
+   ''.  __  .''
+    |  /o o\\  | 
+    | (  _  ) | 
+    | /| ^ |\\ | 
+    | /|   |\\ | 
+    | / \\  / \\|
+    '=    /    ='
+     |   /    |
+     |  /     |
+     '-._     _.-'
+         |   |
+         |   | GOLD`,
+            
+            // Leprechaun Frame 2: Right leg up
+            `🍀 Happy St. Patrick's Day! 🍀
+      .-""""""""-.
+    .'          '.
+   /   Leprechaun   \\
+  : ,          , :
+   ''.  __  .''
+    |  /o o\\  | 
+    | (  _  ) | 
+    | /| ^ |\\ | 
+    | /|   |\\ | 
+    | / \\  / \\|
+    '=    \\    ='
+     |     \\   |
+     |      \\  |
+     '-._    _.-'
+         |   |
+         |   | GOLD`
+        ];
+
+        let frameIndex = 0;
+        const animationElement = document.getElementById('animation');
+
+        function animate() {
+            animationElement.textContent = frames[frameIndex];
+            frameIndex = (frameIndex + 1) % frames.length;
+        }
+
+        // Start animation
+        animate();
+        setInterval(animate, 500); // Switch frames every 500ms
+
+        // Add some matrix-style falling characters in the background
+        const canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        canvas.style.position = 'absolute';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.zIndex = '-1';
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const characters = '☘️🍀01';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(0);
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters[Math.floor(Math.random() * characters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(draw, 50);
+    </script>
+</body>
+</html>
