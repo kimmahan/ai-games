@@ -45,9 +45,25 @@
             font-size: 36px;
             text-align: center;
             display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 300px;
+        }
+        #high-scores {
+            margin-top: 20px;
+            font-size: 22px;
+        }
+        #high-score-list {
+            padding-left: 25px;
+            font-size: 18px;
+            text-align: left;
+        }
+        #high-score-list li {
+            margin-bottom: 5px;
         }
         button {
-            margin-top: 20px;
+            margin-top: 10px;
             padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
@@ -59,6 +75,13 @@
         button:hover {
             background-color: #45a049;
         }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -69,7 +92,18 @@
         <div id="game-over">
             <h2>GAME OVER</h2>
             <p>Your score: <span id="final-score">0</span></p>
-            <button id="restart-button">Play Again</button>
+            
+            <div id="high-scores">
+                <h3>HIGH SCORES</h3>
+                <ol id="high-score-list"></ol>
+            </div>
+            
+            <div id="enter-name" style="margin-top: 15px;">
+                <input type="text" id="player-name" placeholder="Enter your name" maxlength="10">
+                <button id="save-score-button">Save Score</button>
+            </div>
+            
+            <button id="restart-button" style="margin-top: 20px;">Play Again</button>
         </div>
     </div>
 
@@ -81,16 +115,49 @@
         const livesElement = document.getElementById('lives');
         const gameOverElement = document.getElementById('game-over');
         const finalScoreElement = document.getElementById('final-score');
+        const highScoreListElement = document.getElementById('high-score-list');
+        const playerNameInput = document.getElementById('player-name');
+        const saveScoreButton = document.getElementById('save-score-button');
         const restartButton = document.getElementById('restart-button');
 
         // Game variables
         let score = 0;
+        let highScores = [];
         let lives = 3;
         let gameOver = false;
         let asteroids = [];
         let bullets = [];
         let lastAsteroidTime = 0;
         let asteroidInterval = 1500; // ms between asteroid spawns
+        
+        // Load high scores from local storage
+        function loadHighScores() {
+            const savedScores = localStorage.getItem('asteroidHighScores');
+            if (savedScores) {
+                try {
+                    highScores = JSON.parse(savedScores);
+                } catch(e) {
+                    highScores = [];
+                }
+            } else {
+                highScores = [];
+            }
+        }
+        
+        // Save high scores to local storage
+        function saveHighScores() {
+            localStorage.setItem('asteroidHighScores', JSON.stringify(highScores));
+        }
+        
+        // Add a new score to high scores list
+        function addHighScore(newScore) {
+            highScores.push(newScore);
+            highScores.sort((a, b) => b.score - a.score);
+            if (highScores.length > 5) {
+                highScores = highScores.slice(0, 5);
+            }
+            saveHighScores();
+        }
 
         // Player ship
         const ship = {
@@ -137,9 +204,37 @@
 
         // Restart button event listener
         restartButton.addEventListener('click', resetGame);
+        
+        // Save score button event listener
+        saveScoreButton.addEventListener('click', function() {
+            const playerName = playerNameInput.value.trim() || 'Anonymous';
+            addHighScore({
+                name: playerName,
+                score: score,
+                date: new Date().toLocaleDateString()
+            });
+            updateHighScoreDisplay();
+            
+            // Hide the input form after saving
+            document.getElementById('enter-name').style.display = 'none';
+        });
+        
+        // Function to update the high score display
+        function updateHighScoreDisplay() {
+            highScoreListElement.innerHTML = '';
+            highScores.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = `${entry.name}: ${entry.score}`;
+                highScoreListElement.appendChild(li);
+            });
+        }
 
         // Initialize the game
         function init() {
+            // Load high scores from local storage
+            loadHighScores();
+            updateHighScoreDisplay();
+            
             resetGame();
             // Start the game loop
             requestAnimationFrame(gameLoop);
@@ -166,6 +261,10 @@
             scoreElement.textContent = 'Score: ' + score;
             livesElement.textContent = 'Lives: ' + lives;
             gameOverElement.style.display = 'none';
+            
+            // Reset the player name input
+            playerNameInput.value = '';
+            document.getElementById('enter-name').style.display = 'block';
             
             // Create initial asteroids
             createAsteroids(3);
@@ -332,8 +431,9 @@
                         // Remove asteroid
                         asteroids.splice(j, 1);
                         
-                        // Increase score
-                        score += 10;
+                        // Increase score based on asteroid size
+                        const pointValue = Math.floor(50 / asteroid.radius);
+                        score += pointValue;
                         scoreElement.textContent = 'Score: ' + score;
                         
                         break; // Bullet can only hit one asteroid
@@ -449,6 +549,20 @@
                 gameOver = true;
                 finalScoreElement.textContent = score;
                 gameOverElement.style.display = 'block';
+                
+                // Show high scores
+                updateHighScoreDisplay();
+                
+                // Check if this score qualifies for high score list
+                const isHighScore = highScores.length < 5 || score > highScores[highScores.length - 1].score;
+                
+                // Display or hide name input form
+                document.getElementById('enter-name').style.display = isHighScore ? 'block' : 'none';
+                
+                // Focus on the name input if it's a high score
+                if (isHighScore) {
+                    setTimeout(() => playerNameInput.focus(), 100);
+                }
             } else {
                 // Make ship temporarily invulnerable
                 ship.invulnerable = true;
