@@ -74,6 +74,3 @@ function celebrateBirthday(name) {
 
 // Run the animation
 celebrateBirthday("Tucker");
-
-// The actual commit message could be something like:
-// git commit -m "feat: Added birthday celebration for Tucker 🎂"
