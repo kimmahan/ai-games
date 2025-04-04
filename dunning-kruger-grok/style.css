@@ -1,0 +1,56 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #2196F3;
+}
+
+.graph {
+    margin: 20px 0;
+    text-align: center;
+}
+
+svg {
+    max-width: 100%;
+}
+
+.label {
+    font-size: 14px;
+    fill: #666;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: bold;
+    fill: #333;
+}
+
+.axis-label {
+    font-size: 14px;
+    fill: #000;
+}
+
+.description {
+    margin-top: 20px;
+    line-height: 1.6;
+}
+
+ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}

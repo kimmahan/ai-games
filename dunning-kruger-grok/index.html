@@ -1,0 +1,49 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dunning-Kruger Effect for Tech Apprentices</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Dunning-Kruger Effect: Tech Skill Journey</h1>
+        <div class="graph">
+            <svg width="800" height="400">
+                <!-- Graph curve -->
+                <path d="M50,350 Q200,50 400,200 Q600,350 750,250" 
+                      fill="none" stroke="#2196F3" stroke-width="4"/>
+                
+                <!-- Mt. Stupid peak -->
+                <circle cx="200" cy="50" r="5" fill="red"/>
+                <text x="210" y="45" class="label">"I can build a website - I can build anything!"</text>
+                <text x="180" y="20" class="title">Mt. Stupid</text>
+
+                <!-- Trough of Despair -->
+                <circle cx="600" cy="350" r="5" fill="red"/>
+                <text x="610" y="345" class="label">"MAXX Potential Level 2-3 Interview"</text>
+                <text x="580" y="375" class="title">Trough of Despair</text>
+
+                <!-- Axes -->
+                <line x1="50" y1="350" x2="750" y2="350" stroke="black" stroke-width="2"/>
+                <line x1="50" y1="350" x2="50" y2="50" stroke="black" stroke-width="2"/>
+                
+                <!-- Axis Labels -->
+                <text x="760" y="345" class="axis-label">Experience</text>
+                <text x="20" y="40" class="axis-label">Confidence</text>
+            </svg>
+        </div>
+        <div class="description">
+            <p>This graph illustrates the Dunning-Kruger effect in the context of developing tech skills:</p>
+            <ul>
+                <li><strong>Mt. Stupid:</strong> Early confidence after basic success (e.g., building a simple website)</li>
+                <li><strong>Trough of Despair:</strong> Realization of complexity at Level 2-3, working with APIs and data stores</li>
+                <li><strong>Slope of Enlightenment:</strong> Gradual, realistic confidence growth with experience</li>
+            </ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
