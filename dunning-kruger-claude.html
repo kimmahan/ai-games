@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dunning-Kruger Effect in Tech Skill Development</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin-bottom: 40px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .axis {
+            position: absolute;
+            background-color: #333;
+        }
+        .x-axis {
+            bottom: 50px;
+            left: 50px;
+            width: calc(100% - 100px);
+            height: 2px;
+        }
+        .y-axis {
+            bottom: 50px;
+            left: 50px;
+            width: 2px;
+            height: calc(100% - 100px);
+        }
+        .axis-label {
+            position: absolute;
+            font-weight: bold;
+        }
+        .x-label {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .y-label {
+            transform: rotate(-90deg);
+            left: 15px;
+            top: 50%;
+            transform-origin: left;
+        }
+        .curve {
+            position: absolute;
+            bottom: 51px;
+            left: 51px;
+            width: calc(100% - 102px);
+            height: calc(100% - 102px);
+        }
+        .marker {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: red;
+            border-radius: 50%;
+            transform: translate(-50%, 50%);
+            cursor: pointer;
+            z-index: 10;
+        }
+        .marker::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background-color: rgba(255, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            70% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+        .tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 250px;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .tooltip h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        .tooltip p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .tooltip.visible {
+            opacity: 1;
+        }
+        .labels {
+            position: absolute;
+            font-size: 12px;
+            color: #555;
+        }
+        .chart-stages {
+            display: flex;
+            justify-content: space-between;
+            margin-top: -20px;
+            padding: 0 50px;
+            font-size: 12px;
+            color: #555;
+        }
+        .stage {
+            text-align: center;
+            max-width: 100px;
+        }
+        .info-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .info-panel h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .info-panel p {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Dunning-Kruger Effect in Tech Skill Development</h1>
+        
+        <div class="chart-container">
+            <div class="axis x-axis"></div>
+            <div class="axis y-axis"></div>
+            <div class="axis-label x-label">Experience / Knowledge</div>
+            <div class="axis-label y-label">Confidence</div>
+            
+            <svg class="curve" viewBox="0 0 1000 500" preserveAspectRatio="none">
+                <!-- The curve path - adjusted to match the marker positions better -->
+                <path d="M0,350 C100,100 200,50 300,250 C400,350 600,380 700,320 C800,280 900,230 1000,100" 
+                      stroke="#3498db" 
+                      stroke-width="4" 
+                      fill="none" />
+            </svg>
+
+            <!-- The markers with their tooltips -->
+            <div class="marker" style="bottom: 75%; left: 20%;" data-id="mt-stupid"></div>
+            <div class="marker" style="bottom: 35%; left: 40%;" data-id="despair"></div>
+            <div class="marker" style="bottom: 38%; left: 60%;" data-id="learning"></div>
+            <div class="marker" style="bottom: 70%; left: 90%;" data-id="mastery"></div>
+            
+            <!-- Tooltips -->
+            <div class="tooltip" id="mt-stupid-tooltip">
+                <h3>Peak of "Mount Stupid"</h3>
+                <p>"I can build a website by myself - now I can build anything!"</p>
+                <p>The dangerous overconfidence of knowing just enough to think you know it all.</p>
+            </div>
+            
+            <div class="tooltip" id="despair-tooltip">
+                <h3>Valley of Despair</h3>
+                <p>"MAXX Potential Level 2-3 Interview"</p>
+                <p>Reality hits hard when you realize how much you don't know. This is where you switch from reading/modifying code to creating artifacts and connecting APIs, data stores, etc.</p>
+            </div>
+            
+            <div class="tooltip" id="learning-tooltip">
+                <h3>Slope of Enlightenment</h3>
+                <p>Steady progress as you build real projects, learn from mistakes, and develop problem-solving skills.</p>
+                <p>You're now gaining experience with different frameworks, APIs, and technologies.</p>
+            </div>
+            
+            <div class="tooltip" id="mastery-tooltip">
+                <h3>Plateau of Sustainability</h3>
+                <p>You've developed enough expertise to know both what you know and what you don't know.</p>
+                <p>You can architect solutions, mentor others, and continuously learn with realistic expectations.</p>
+            </div>
+            
+            <!-- Stage labels -->
+            <div class="chart-stages">
+                <div class="stage">Beginner</div>
+                <div class="stage">Early Intermediate</div>
+                <div class="stage">Advanced Intermediate</div>
+                <div class="stage">Expert</div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h2>Understanding the Dunning-Kruger Effect in Tech Skill Development</h2>
+            <p>The Dunning-Kruger effect describes a cognitive bias where people with limited knowledge in a domain overestimate their abilities. This visualization maps this phenomenon to the tech skills journey of MAXX Potential apprentices.</p>
+            
+            <h3>Key Insights:</h3>
+            <ul>
+                <li><strong>Mount Stupid (Peak of Overconfidence):</strong> After learning basic HTML/CSS and building your first simple website, it's easy to feel like you've mastered web development.</li>
+                <li><strong>Valley of Despair (MAXX Level 2-3 Transition):</strong> The challenging transition where expectations increase dramatically. You're now required to create complete artifacts from scratch and integrate with complex systems.</li>
+                <li><strong>Slope of Enlightenment:</strong> As you gain real experience solving problems, your skills improve steadily while your understanding of the field's complexity grows.</li>
+                <li><strong>Plateau of Sustainability:</strong> You develop expertise balanced with the humility of knowing there's always more to learn. Your confidence is now based on actual competence.</li>
+            </ul>
+            
+            <p><em>Remember: Everyone goes through this journey. The valley of despair is a natural and necessary part of developing expertise. Embrace the struggle!</em></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const markers = document.querySelectorAll('.marker');
+            const tooltips = document.querySelectorAll('.tooltip');
+            
+            // Show tooltip on marker hover
+            markers.forEach(marker => {
+                marker.addEventListener('mouseenter', function() {
+                    const tooltipId = this.getAttribute('data-id') + '-tooltip';
+                    const tooltip = document.getElementById(tooltipId);
+                    
+                    // Position the tooltip
+                    const markerRect = this.getBoundingClientRect();
+                    tooltip.style.left = markerRect.right + 10 + 'px';
+                    tooltip.style.top = window.scrollY + markerRect.top - 20 + 'px';
+                    
+                    // Make tooltip visible
+                    tooltip.classList.add('visible');
+                });
+                
+                marker.addEventListener('mouseleave', function() {
+                    const tooltipId = this.getAttribute('data-id') + '-tooltip';
+                    const tooltip = document.getElementById(tooltipId);
+                    tooltip.classList.remove('visible');
+                });
+            });
+            
+            // Mobile tap support
+            markers.forEach(marker => {
+                marker.addEventListener('click', function() {
+                    const tooltipId = this.getAttribute('data-id') + '-tooltip';
+                    const tooltip = document.getElementById(tooltipId);
+                    
+                    // Close any open tooltips
+                    tooltips.forEach(t => {
+                        if (t.id !== tooltipId) {
+                            t.classList.remove('visible');
+                        }
+                    });
+                    
+                    // Toggle the clicked tooltip
+                    tooltip.classList.toggle('visible');
+                    
+                    // Position the tooltip
+                    const markerRect = this.getBoundingClientRect();
+                    tooltip.style.left = markerRect.right + 10 + 'px';
+                    tooltip.style.top = window.scrollY + markerRect.top - 20 + 'px';
+                    
+                    // For mobile: if tooltip would go off-screen, reposition it
+                    const tooltipRect = tooltip.getBoundingClientRect();
+                    if (tooltipRect.right > window.innerWidth) {
+                        tooltip.style.left = (markerRect.left - tooltipRect.width - 10) + 'px';
+                    }
+                });
+            });
+            
+            // Close tooltips when clicking elsewhere
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.marker')) {
+                    tooltips.forEach(tooltip => {
+                        tooltip.classList.remove('visible');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
