@@ -1,0 +1,93 @@
+import { useEffect, useRef } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const labels = [
+  "Novice",
+  "Confident",
+  "Doubt",
+  "Despair",
+  "Growth",
+  "Expert"
+];
+
+const data = {
+  labels,
+  datasets: [
+    {
+      label: "Confidence",
+      data: [0.2, 1.0, 0.4, 0.1, 0.6, 0.9],
+      tension: 0.4,
+      borderWidth: 2,
+      fill: false,
+    },
+  ],
+};
+
+const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      callbacks: {
+        label: () => "",
+      },
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      suggestedMax: 1.2,
+      ticks: {
+        callback: (value) => `${Math.round(value * 100)}%`,
+      },
+    },
+  },
+};
+
+export default function DunningKrugerChart() {
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = chartRef.current?.canvas;
+    if (!canvas) return;
+  }, []);
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+      <h1 className="text-2xl font-bold mb-4">The Dunning-Kruger Effect in Tech Learning</h1>
+      <Card className="w-full max-w-3xl">
+        <CardContent>
+          <Line ref={chartRef} data={data} options={options} />
+          <div className="mt-4 space-y-2">
+            <p><strong>Peak of Mt. Stupid:</strong> “I can build a website by myself — now I can build anything!”</p>
+            <p><strong>Trough of Despair:</strong> “MAXX Potential Level 2-3 Interview”</p>
+          </div>
+        </CardContent>
+      </Card>
+    </main>
+  );
+}
